@@ -46,10 +46,10 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Margin="10">
 
                 <Button Margin="30,10,30,10" Click="PreviousAvatar_Click" FontSize="16">
-                    <Image Source="/Images/lArrow.png"/>
+                    <Image Source="/Images/Controls/lArrow.png"/>
                 </Button>
                 <Button Margin="30,10,30,10" Click="NextAvatar_Click" FontSize="16">
-                    <Image Source="/Images/rArrow.png"/>
+                    <Image Source="/Images/Controls/rArrow.png"/>
                 </Button>
             </StackPanel>
         </Grid>

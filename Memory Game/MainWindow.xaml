@@ -18,12 +18,12 @@
         <StackPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,10,10,358" Width="72">
             <Button x:Name="HideButtom"  HorizontalAlignment="Right" VerticalAlignment="Top" Width="30" 
                     Click="Minimize_Click" Background="Transparent" Margin="0,0,10,0">
-                <Image Source="/Images/-.png"/>
+                <Image Source="/Images/Controls/-.png"/>
             </Button>
 
             <Button x:Name="ExitButtom"  HorizontalAlignment="Right" VerticalAlignment="Top" Width="30" 
                     Click="Cancel_Click" Background="Transparent">
-                <Image Source="/Images/x.png"/>
+                <Image Source="/Images/Controls/x.png"/>
             </Button>
         </StackPanel>
         <Frame Name="MainFrame" NavigationUIVisibility="Hidden"/>

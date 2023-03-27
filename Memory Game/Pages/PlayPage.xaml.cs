@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Memory_Game.Pages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,14 +21,16 @@ namespace Memory_Game
     /// </summary>
     public partial class PlayPage : Page
     {
-        public PlayPage()
+        MainWindow mainWindow;
+        public PlayPage(MainWindow mainWindow)
         {
             InitializeComponent();
+            this.mainWindow = mainWindow;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void NewGame(object sender, RoutedEventArgs e)
         {
-
+            mainWindow.MainFrame.NavigationService.Navigate(new Game());
         }
     }
 }

@@ -14,5 +14,8 @@ namespace Memory_Game
         {
             ImageFile = imageFile;
         }
+        public Avatar() { 
+            ImageFile = string.Empty;
+        }
     }
 }

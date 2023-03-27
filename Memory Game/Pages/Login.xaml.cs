@@ -37,7 +37,7 @@ namespace Memory_Game
             _avatars = new List<Avatar>();
             for (int i = 1; i <= numberOfAvatars; i++)
             {
-                _avatars.Add(new Avatar($"Avatars/{i}.png"));
+                _avatars.Add(new Avatar($"../Avatars/{i}.png"));
             }
             _selectedAvatarIndex = 0;
 
@@ -115,7 +115,7 @@ namespace Memory_Game
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Do you want to close this window?",
+            if (MessageBox.Show("Do you want to permanently delete this user?",
                 "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 objectToSerialize.ObjectsToSerializeCollection.Remove(SelectedUser);
@@ -126,7 +126,7 @@ namespace Memory_Game
 
         private void Play_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.MainFrame.NavigationService.Navigate(new PlayPage());
+            mainWindow.MainFrame.NavigationService.Navigate(new PlayPage(mainWindow));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

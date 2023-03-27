@@ -11,6 +11,8 @@ namespace Memory_Game
         public string Name { get; set; }
         public string Password { get; set; }
 
+        public Avatar Avatar { get; set; }
+
         public User(string name, string password)
         {
             Name = name;
