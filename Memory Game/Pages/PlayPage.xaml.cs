@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfXMLSerialization.MyClasses;
 
 namespace Memory_Game
 {
@@ -22,15 +23,28 @@ namespace Memory_Game
     public partial class PlayPage : Page
     {
         MainWindow mainWindow;
-        public PlayPage(MainWindow mainWindow)
+        User currentUser;
+        ObjectToSerialize<User> _objectToSerialize;
+        public PlayPage(MainWindow mainWindow, User user, ObjectToSerialize<User>objectToSerialize)
         {
             InitializeComponent();
             this.mainWindow = mainWindow;
+            currentUser = user;
+            _objectToSerialize = objectToSerialize;
         }
 
         private void NewGame(object sender, RoutedEventArgs e)
         {
-            mainWindow.MainFrame.NavigationService.Navigate(new Game());
+            mainWindow.MainFrame.NavigationService.Navigate(new Game(currentUser,_objectToSerialize));
+        }
+
+        private void LoadGameBtnClicked(object sender, RoutedEventArgs e)
+        {
+            if(currentUser.GameData!=null)
+            {
+                MessageBox.Show("savedata found");
+            }
+            mainWindow.MainFrame.NavigationService.Navigate(new Game(currentUser, _objectToSerialize, currentUser.GameData));
         }
     }
 }

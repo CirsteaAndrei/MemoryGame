@@ -1,0 +1,39 @@
+﻿<Window x:Class="Memory_Game.Pages.LittleWindows.Authentication"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Memory_Game.Pages.LittleWindows"
+        mc:Ignorable="d"
+        Title="Authentication" Height="300" Width="500"
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Background="#212529"
+        >
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Border Background="#212529"
+                CornerRadius="20"/>
+        
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Label Foreground="White">
+                Username:
+            </Label>
+            <Label x:Name="ShowUsername" Foreground="White"/>
+
+            <Label Foreground="White" Width="150">
+                Password
+            </Label>
+            <PasswordBox x:Name="Password" VerticalAlignment="Center" Margin="0,0,0,10"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Login" Margin="0,10,100,10" Width="85" Click="LoginBtn_Click"/>
+            <Button Content="Cancel" Margin="100,10,0,10" Width="85" Click="CancelBtn_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

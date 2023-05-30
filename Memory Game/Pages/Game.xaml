@@ -3,16 +3,18 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Memory_Game"
+      xmlns:local="clr-namespace:Memory_Game.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Game">
 
-    <Page.DataContext>
-        <local:GameBoard/>
-    </Page.DataContext>
+
     <Grid>
-        <ItemsControl ItemsSource="{Binding Images}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="600"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ItemsControl x:Name="TilesItemControl" ItemsSource="{Binding Board.Images}" Grid.Column="0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <ItemsControl ItemsSource="{Binding}">
@@ -31,13 +33,9 @@
                                 </Button>
                                 <DataTemplate.Triggers>
                                     <DataTrigger Binding="{Binding IsMatched}" Value="True">
-                                        <Setter TargetName="FrontImage" Property="Visibility" Value="Hidden"/>
-                                        <Setter TargetName="BackImage" Property="Visibility" Value="Visible"/>
+                                        <Setter TargetName="FrontImage" Property="Visibility" Value="Visible"/>
+                                        <Setter TargetName="BackImage" Property="Visibility" Value="Hidden"/>
                                     </DataTrigger>
-                                    <!--<DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                        <Setter TargetName="FrontImage" Property="Visibility" Value="Hidden"/>
-                                        <Setter TargetName="BackImage" Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>-->
                                 </DataTemplate.Triggers>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -45,7 +43,27 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <ComboBox HorizontalAlignment="Left" Height="982" Margin="-73,209,0,0" VerticalAlignment="Top" Width="40"/>
-        <Label x:Name="label" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="28" Foreground="white" Margin="438,-10,0,10" Width="362"/>
+
+        <Grid Grid.Column="1">
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,310,0,0" Width="200">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Width="30">
+                    <Image Source="../Images/Controls/save.png"/>
+                    <Image Source="../Images/Controls/stats.png"/>
+                    <Image Source="../Images/Controls/x.png"/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" >
+                    <Button Content="Save Game" FontSize="20" HorizontalContentAlignment="Left" Height="30" Width="125" 
+                            Background="Transparent" Foreground="White" BorderBrush="{x:Null}"
+                            Click="SaveGameBtnClicked"/>
+                    <Button Content="Statistics" FontSize="20" HorizontalContentAlignment="Left" Height="30" Width="125" Background="Transparent" Foreground="White" BorderBrush="{x:Null}"/>
+                    <Button Content="Exit" FontSize="20" HorizontalContentAlignment="Left" Height="30" Width="125" Background="Transparent" Foreground="White" BorderBrush="{x:Null}"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <Image x:Name="AvatarViewer" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Source="{Binding UserAvatar.ImageFile}" Margin="0,50,0,0" />
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,60,0,0">
+            <Label x:Name="MistakesMadeLabel" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" Foreground="white" Width="190" Grid.Column="1" Margin="0,15,0,0"></Label>
+        </StackPanel>
     </Grid>
 </Page>

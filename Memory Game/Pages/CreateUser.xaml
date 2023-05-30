@@ -30,6 +30,5 @@
             </StackPanel>
         </StackPanel>
         <Button Grid.Row="1" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,10" Click="BackBtn_Click"/>
-        <PasswordBox HorizontalAlignment="Left" Margin="806,349,0,0" VerticalAlignment="Top" Width="120"/>
     </Grid>
 </Page>

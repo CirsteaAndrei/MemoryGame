@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Memory_Game.GameLogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfXMLSerialization.MyClasses;
 
 namespace Memory_Game.Pages
 {
@@ -22,24 +24,63 @@ namespace Memory_Game.Pages
     public partial class Game : Page
     {
         private Tile? _firstSelectedTile;
+        private Button? _firstSelectedTileButton;
         private Tile? _secondSelectedTile;
-        int notMatchedCounter;
-        public Game()
+        private Button? _secondSelectedTileButton;
+
+        public GameData _gameData;
+        public User _currentUser { get; set; }
+        private ObjectToSerialize<User> _objectToSerialize;
+        SerializationActions<User> _serializationActions;
+        public Game(User user, ObjectToSerialize<User> objectToSerialize)
         {
             InitializeComponent();
             _firstSelectedTile = null;
+            _firstSelectedTileButton = null;
             _secondSelectedTile = null;
-            notMatchedCounter = 0;
+            _secondSelectedTileButton = null;
+            _currentUser = user;
+            _gameData = new GameData(new GameBoard());
+            this.DataContext = this;
+            MistakesMadeLabel.Content = $"Mistakes made:\n {_gameData.Level.MistakesMade}/{_gameData.Level.MistakesAllowed}";
+            _objectToSerialize = objectToSerialize;
+            _serializationActions = new SerializationActions<User>(_objectToSerialize.ObjectsToSerializeCollection);
+            TilesItemControl.DataContext = _gameData;
         }
+
+        public Game(User user, ObjectToSerialize<User> objectToSerialize, GameData gameData)
+        {
+            InitializeComponent();
+            this.DataContext = this;
+            _firstSelectedTile = null;
+            _secondSelectedTile = null;
+            _currentUser = user;
+            if (gameData != null)
+            {
+                _gameData = user.GameData;
+            }
+            else
+            {
+                MessageBox.Show("No saved game data found, new game started");
+                _gameData = new GameData();
+            }
+            
+            MistakesMadeLabel.Content = $"Mistakes made:\n {_gameData.Level.MistakesMade}/{_gameData.Level.MistakesAllowed}";
+            _objectToSerialize = objectToSerialize;
+            _serializationActions = new SerializationActions<User>(_objectToSerialize.ObjectsToSerializeCollection);
+            TilesItemControl.DataContext = _gameData;
+        }
+
+        public Avatar UserAvatar
+        { get { return _currentUser.Avatar; } }
 
         private void OnTileClicked(object sender, RoutedEventArgs e)
         {
             var button = (Button)sender;
             var tile = (Tile)button.DataContext;
-            tile.AttachedButton = button;
 
             // don't allow selecting the same tile twice
-            if (tile == _firstSelectedTile||tile.IsMatched)
+            if (tile == _firstSelectedTile || tile.IsMatched)
             {
                 return;
             }
@@ -48,13 +89,15 @@ namespace Memory_Game.Pages
             {
                 // first tile selected
                 _firstSelectedTile = tile;
-                ShowTile(tile);
+                _firstSelectedTileButton = button;
+                ShowTile(tile, _firstSelectedTileButton);
             }
             else if (_secondSelectedTile == null)
             {
                 // second tile selected
                 _secondSelectedTile = tile;
-                ShowTile(tile);
+                _secondSelectedTileButton = button;
+                ShowTile(tile, _secondSelectedTileButton);
 
                 // check for match
                 if (_firstSelectedTile.ImageFile == _secondSelectedTile.ImageFile)
@@ -64,26 +107,31 @@ namespace Memory_Game.Pages
 
                     _firstSelectedTile = null;
                     _secondSelectedTile = null;
+                    _firstSelectedTileButton = null;
+                    _secondSelectedTileButton = null;
                 }
             }
             else
             {
                 // third tile selected, reset the previous two
-                HideTile(_firstSelectedTile);
-                _firstSelectedTile= null;
-                HideTile(_secondSelectedTile);
-                _secondSelectedTile= null;
-                notMatchedCounter++;
-                label.Content = notMatchedCounter;
+                HideTile(_firstSelectedTile, _firstSelectedTileButton);
+                _firstSelectedTile = null;
+                _firstSelectedTileButton = null;
+                HideTile(_secondSelectedTile, _secondSelectedTileButton);
+                _secondSelectedTile = null;
+                _secondSelectedTileButton = null;
+                _gameData.Level.MistakesMade++;
+                MistakesMadeLabel.Content = $"Mistakes made:\n {_gameData.Level.MistakesMade}/{_gameData.Level.MistakesAllowed}";
 
                 _firstSelectedTile = tile;
-                ShowTile(tile);
+                _firstSelectedTileButton = button;
+                ShowTile(tile, _firstSelectedTileButton);
             }
         }
 
-        private void ShowTile(Tile tile)
+        private void ShowTile(Tile tile, Button tileButton)
         {
-            var button = tile.AttachedButton;
+            var button = tileButton;
             var grid = (Grid)button.Content;
             var frontImage = grid.Children.OfType<Image>().First(x => x.Name == "FrontImage");
             var backImage = grid.Children.OfType<Image>().First(x => x.Name == "BackImage");
@@ -92,9 +140,9 @@ namespace Memory_Game.Pages
             backImage.Visibility = Visibility.Hidden;
         }
 
-        private void HideTile(Tile tile)
+        private void HideTile(Tile tile, Button tileButton)
         {
-            var button = tile.AttachedButton;
+            var button = tileButton;
             var grid = (Grid)button.Content;
             var frontImage = grid.Children.OfType<Image>().First(x => x.Name == "FrontImage");
             var backImage = grid.Children.OfType<Image>().First(x => x.Name == "BackImage");
@@ -103,19 +151,17 @@ namespace Memory_Game.Pages
             backImage.Visibility = Visibility.Visible;
         }
 
-        //private Button FindButton(Tile tile)
-        //{
-        //    var itemsControl = (ItemsControl)VisualTreeHelper.GetParent(GetTileContainer(tile));
-        //    var container = (FrameworkElement)itemsControl.ItemContainerGenerator.ContainerFromItem(tile);
-        //    var button = (Button)container.ContentTemplate.FindName("TileButton", container);
-        //    return button;
-        //}
-
-        private Panel GetTileContainer(Tile tile)
+        private void SaveGameBtnClicked(object sender, RoutedEventArgs e)
         {
-            var itemsControl = (ItemsControl)VisualTreeHelper.GetParent(tile.AttachedButton);
-            var container = (FrameworkElement)itemsControl.ItemContainerGenerator.ContainerFromItem(tile);
-            return (Panel)VisualTreeHelper.GetParent(container);
+            int userIndex = _objectToSerialize.ObjectsToSerializeCollection.IndexOf(_currentUser);
+
+            // Update the GameData object at that index with the new _gameData object
+            _objectToSerialize.ObjectsToSerializeCollection[userIndex].GameData = _gameData;
+
+            // Serialize the updated ObjectToSerialize<User> object and save it to disk
+            _serializationActions.SerializeObject(_objectToSerialize, "../../../SavedInfo/credentials.xml");
+
+            MessageBox.Show("Game saved successfully");
         }
     }
 

@@ -1,8 +1,10 @@
-﻿using Memory_Game.ViewModels;
+﻿using Memory_Game.Pages.LittleWindows;
+using Memory_Game.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -29,7 +31,8 @@ namespace Memory_Game
             usersSerializationAct = new SerializationActions<User>(userVM.Users);
             objectToSerialize = new ObjectToSerialize<User>();
 
-
+            //objectToSerialize.ObjectsToSerializeCollection.Add(new User("asd", "asd"));
+            //usersSerializationAct.SerializeObject(objectToSerialize, "../../../SavedInfo/credentials.xml");
             objectToSerialize.ObjectsToSerializeCollection = usersSerializationAct.DeserializeObject("../../../SavedInfo/credentials.xml");
             userVM.Users = objectToSerialize.ObjectsToSerializeCollection;
             _selectedUserIndex = -1;
@@ -44,20 +47,6 @@ namespace Memory_Game
             // Set data context
             DataContext = this;
             UserList.DataContext = userVM;
-        }
-
-        public void LoadUsers(string filePath)
-        {
-            StreamReader reader = new StreamReader(filePath);
-            string username;
-            string password;
-            while (reader.Peek() != -1)
-            {
-                username = reader.ReadLine();
-                password = reader.ReadLine();
-                userVM.Users.Add(new User(username, password));
-            }
-            reader.Close();
         }
 
         public void RefreshUsers()
@@ -126,7 +115,16 @@ namespace Memory_Game
 
         private void Play_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.MainFrame.NavigationService.Navigate(new PlayPage(mainWindow));
+            var authWindow = new Authentication(SelectedUser);
+            authWindow.Owner = mainWindow;
+
+            bool? result = authWindow.ShowDialog();
+
+            if (result == true && SelectedUser != null &&SelectedUser.IsAuthenticated)
+            {
+                SelectedUser.Avatar = SelectedAvatar;
+                mainWindow.MainFrame.NavigationService.Navigate(new PlayPage(mainWindow, SelectedUser, objectToSerialize));
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
